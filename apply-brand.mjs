@@ -19,7 +19,7 @@ const REPO_URL = "https://github.com/felipefontoura/axi25-plugin";
 const BRAND = {
   name: "AXI25",
   icon: "square-terminal",              // Lucide id — terminal/craft, not "AI robot"
-  logoFile: "axi25-logo.png",           // header + About: full AXI25 wordmark on charcoal (the real logo)
+  logoFile: "axi25-logo.png",           // header + About: stacked AXI/25 wordmark on charcoal
   spriteFile: "axi25-mark.png",         // welcome mascot (real AXI25 wordmark)
   manifest: {
     id: "axi25",
@@ -28,6 +28,10 @@ const BRAND = {
     author: "Felipe Fontoura",
     authorUrl: REPO_URL,
     fundingUrl: "",                     // no third-party funding
+  },
+  about: {
+    removeGithubCard: true,             // distributable: drop the source-repo card from the About modal
+    docUrl: "https://github.com/felipefontoura/axi25",        // Documentation card target (temporary)
   },
   // exact third-party URLs in the bundle → repoint to our own repo (removes every
   // destination that led to the original author). Claude/w3.org infra is left alone.
@@ -89,6 +93,22 @@ for (const [from, to] of Object.entries(BRAND.urlSwaps)) {
   const re = /\n[ \t]*\{\s*icon: "",\s*svgInline: DISCORD_SVG,[\s\S]*?\n[ \t]*\},/;
   if (re.test(src)) { src = src.replace(re, ""); note(`${C.g}✓${C.x}`, `card    ${C.d}Discord removido do modal "Sobre"${C.x}`); }
   else note(`${C.d}·${C.x}`, `card    ${C.d}Discord ausente (ok)${C.x}`);
+}
+
+// remove the GitHub (source-repo) card — last element in the array
+if (BRAND.about?.removeGithubCard) {
+  const re = /,\s*\{\s*icon: "github",[\s\S]*?\n[ \t]*\}(?=\s*\];)/;
+  if (re.test(src)) { src = src.replace(re, ""); note(`${C.g}✓${C.x}`, `card    ${C.d}GitHub removido do modal "Sobre"${C.x}`); }
+  else note(`${C.d}·${C.x}`, `card    ${C.d}GitHub ausente (ok)${C.x}`);
+}
+
+// point the Documentation card at the configured URL
+if (BRAND.about?.docUrl) {
+  const re = /(title: "Documentation",[\s\S]*?href: ")[^"]*(")/;
+  const m = src.match(re);
+  if (!m) note(`${C.y}!${C.x}`, `${C.y}DRIFT${C.x}   Documentation card`);
+  else if (m[0].endsWith(BRAND.about.docUrl + '"')) note(`${C.d}·${C.x}`, `link    ${C.d}Documentation ok → ${BRAND.about.docUrl}${C.x}`);
+  else { src = src.replace(re, `$1${BRAND.about.docUrl}$2`); note(`${C.g}✓${C.x}`, `link    ${C.d}Documentation → ${BRAND.about.docUrl}${C.x}`); }
 }
 
 // ribbon icon
