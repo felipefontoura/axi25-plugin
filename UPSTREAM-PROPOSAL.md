@@ -1,5 +1,7 @@
 # Upstream proposal — optional white-label / brand config
 
+> **Status:** filed upstream as a feature request — [ScottKirvan/BojuBot#286](https://github.com/ScottKirvan/BojuBot/issues/286). PR to follow if the maintainer is open to it.
+
 **Goal:** let a user set a custom display name, ribbon icon, logo, mascot, and
 greetings from `data.json` (plugin settings), instead of the hard-coded
 "BojuBot" identity. This turns re-branding from a post-update patch into a

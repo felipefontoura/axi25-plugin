@@ -19,9 +19,10 @@ const REPO_URL = "https://github.com/felipefontoura/axi25-plugin";
 const BRAND = {
   name: "AXI25",
   icon: "square-terminal",              // Lucide id — terminal/craft, not "AI robot"
-  logoFile: "axi25-tile.png",           // header + About selo (real logo on charcoal)
+  logoFile: "axi25-25.png",             // header + About selo (amber "25" monogram, real letterform)
   spriteFile: "axi25-mark.png",         // welcome mascot (real AXI25 wordmark)
   manifest: {
+    id: "axi25",
     name: "AXI25",
     description: "AXI25 — Augmented eXtraction Intelligence. Vault-aware AI, skills, and a Claude chat panel native to your vault.",
     author: "Felipe Fontoura",

@@ -39,6 +39,20 @@ The distributable `axi25` vault vendors the **built, branded** `plugin/` into
 `.obsidian/plugins/…`. Source and tooling stay here; the vault ships only the
 clean output.
 
+## Credits & upstream
+
+AXI25 is built on **[BojuBot](https://github.com/ScottKirvan/BojuBot)** by Scott
+Kirvan (MIT). Full credit to the original project — the underlying plugin is his
+work; our changes are branding and packaging only. The required MIT notice is
+retained in [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).
+
+**Giving back:** rather than only patch downstream, we proposed the
+brandable-config feature upstream so any user can white-label the plugin from
+settings — see the feature request at
+[ScottKirvan/BojuBot#286](https://github.com/ScottKirvan/BojuBot/issues/286)
+(full design in [`UPSTREAM-PROPOSAL.md`](UPSTREAM-PROPOSAL.md)). If it lands, this
+repo's branding step is retired.
+
 ## Open items
 
 - **Plugin id** is still `bojubot` (internal, in `manifest.json` + the vault's
