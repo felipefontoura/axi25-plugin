@@ -19,7 +19,7 @@ const REPO_URL = "https://github.com/felipefontoura/axi25-plugin";
 const BRAND = {
   name: "AXI25",
   icon: "square-terminal",              // Lucide id — terminal/craft, not "AI robot"
-  logoFile: "axi25-25.png",             // header + About selo (amber "25" monogram, real letterform)
+  logoFile: "axi25-logo.png",           // header + About: full AXI25 wordmark on charcoal (the real logo)
   spriteFile: "axi25-mark.png",         // welcome mascot (real AXI25 wordmark)
   manifest: {
     id: "axi25",
