@@ -3480,14 +3480,6 @@ var LINK_ITEMS = [
     accent: true
   },
   {
-    icon: "",
-    svgInline: DISCORD_SVG,
-    title: "Discord",
-    desc: "Chat with other BojuBot users and get support.",
-    label: "Join",
-    href: "https://github.com/felipefontoura/axi25-plugin"
-  },
-  {
     icon: "github",
     title: "GitHub",
     desc: "Source code, issues, and release notes.",

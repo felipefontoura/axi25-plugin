@@ -84,6 +84,13 @@ for (const [from, to] of Object.entries(BRAND.urlSwaps)) {
   else note(`${C.y}!${C.x}`, `${C.y}DRIFT${C.x}   ${C.d}${short(from)}${C.x}`);
 }
 
+// remove the About-modal "Discord" card entirely (no third-party community channel)
+{
+  const re = /\n[ \t]*\{\s*icon: "",\s*svgInline: DISCORD_SVG,[\s\S]*?\n[ \t]*\},/;
+  if (re.test(src)) { src = src.replace(re, ""); note(`${C.g}✓${C.x}`, `card    ${C.d}Discord removido do modal "Sobre"${C.x}`); }
+  else note(`${C.d}·${C.x}`, `card    ${C.d}Discord ausente (ok)${C.x}`);
+}
+
 // ribbon icon
 if (BRAND.icon) {
   const re = /(getIcon\(\)\s*\{\s*return\s*")([^"]*)("\s*;)/;
