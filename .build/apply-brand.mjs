@@ -43,7 +43,8 @@ const BRAND = {
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
-const DRY = process.argv.includes("--dry-run") || process.argv.includes("-n");
+const CHECK = process.argv.includes("--check");       // guard mode: verify only, never write, fail on drift / un-branded
+const DRY = CHECK || process.argv.includes("--dry-run") || process.argv.includes("-n");
 const DIR = dirname(fileURLToPath(import.meta.url));  // .build/
 const ROOT = join(DIR, "..");                         // repo root = the loadable plugin
 const ART = join(DIR, "brand");                        // .build/brand/ — plugin art
@@ -52,6 +53,7 @@ const MANIFEST = join(ROOT, "manifest.json");
 const DATA = join(ROOT, "data.json");
 const C = { g: "\x1b[32m", y: "\x1b[33m", r: "\x1b[31m", d: "\x1b[2m", x: "\x1b[0m" };
 const log = [];
+let needed = false;  // any change required → in --check this fails the guard (committed plugin not fully branded)
 const note = (i, m) => log.push(`  ${i} ${m}`);
 const short = (s) => (s.length > 50 ? s.slice(0, 50) + "…" : s);
 
@@ -134,6 +136,7 @@ if (existsSync(MANIFEST)) {
   for (const [k, v] of Object.entries(BRAND.manifest)) {
     if (man[k] !== v) { man[k] = v; changed = true; }
   }
+  if (changed) needed = true;
   if (changed && !DRY) writeFileSync(MANIFEST, JSON.stringify(man, null, 2) + "\n");
   note(changed ? `${C.g}✓${C.x}` : `${C.d}·${C.x}`, `manifest ${C.d}${changed ? "atualizado (name/author/urls)" : "ok"}${C.x}`);
 }
@@ -152,6 +155,7 @@ if (existsSync(DATA)) {
     if (data[k] !== v) { data[k] = v; changed = true; }
   }
   if (data.lastActiveSessionId) { data.lastActiveSessionId = ""; changed = true; }
+  if (changed) needed = true;
   if (changed && !DRY) writeFileSync(DATA, JSON.stringify(data, null, 2) + "\n");
   note(changed ? `${C.g}✓${C.x}` : `${C.d}·${C.x}`, `data.json ${C.d}${changed ? "saneado (export/log/sessão)" : "ok"}${C.x}`);
 }
@@ -160,9 +164,22 @@ if (existsSync(DATA)) {
 console.log(`\n${DRY ? C.y + "DRY-RUN " + C.x : ""}Brand → ${C.g}${BRAND.name}${C.x}`);
 console.log(log.join("\n"));
 if (src !== srcBefore) {
+  needed = true;
   if (DRY) console.log(`\n${C.y}dry run: nada escrito${C.x}\n`);
   else { writeFileSync(MAIN_JS, src); console.log(`\n${C.g}✓ plugin brandado${C.x} (recarregue o Obsidian)\n`); }
 } else console.log(`\n${C.d}main.js já brandado${C.x}\n`);
+
+// ── guard (--check) ──────────────────────────────────────────────────────────
+// Used by the vault's build-dist.sh: fail the release if the committed plugin is
+// not fully branded (drift = a target string moved; needed = a change is pending).
+if (CHECK) {
+  const drift = log.filter((l) => l.includes("DRIFT")).length;
+  if (drift > 0 || needed) {
+    console.error(`${C.r}✗ brand check FAILED${C.x} — drift: ${drift}, changes pending: ${needed}. Run apply-brand and commit.`);
+    process.exit(1);
+  }
+  console.log(`${C.g}✓ brand check passed${C.x} — fully branded, no drift.\n`);
+}
 
 function swapImage(varName, file) {
   const path = join(ART, file);
