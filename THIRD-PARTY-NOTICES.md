@@ -12,10 +12,10 @@ Retaining this notice satisfies the MIT attribution requirement.
 ## BojuBot
 
 - Author: Scott Kirvan
-- Source: https://github.com/ScottKirvan/BojuBot
+- Source: <https://github.com/ScottKirvan/BojuBot>
 - License: MIT
 
-```
+```text
 MIT License
 
 Copyright (c) 2024 Scott Kirvan

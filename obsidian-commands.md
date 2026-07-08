@@ -33,25 +33,25 @@ _Grep by plugin name or display name to find the right command ID for run-comman
 - `bases:insert` — Bases: Insert new base
 - `bases:new-file` — Bases: Create new base
 
-## bojubot
-- `bojubot:audit-memory-file` — AXI25: Audit memory file
-- `bojubot:change-permission-mode` — AXI25: Change permission mode
-- `bojubot:clear-session` — AXI25: Clear current session
-- `bojubot:copy-last-response` — AXI25: Copy last response
-- `bojubot:export-conversation` — AXI25: Export conversation
-- `bojubot:export-to-vault` — AXI25: Export session to vault
-- `bojubot:focus-input` — AXI25: Focus chat input
-- `bojubot:new-session` — AXI25: New session
-- `bojubot:open-agent` — AXI25: Open agent panel
-- `bojubot:open-context-file` — AXI25: Open context file
-- `bojubot:open-settings` — AXI25: Open settings
-- `bojubot:refresh-context` — AXI25: Refresh session context
-- `bojubot:reload-skills` — AXI25: Reload skills
-- `bojubot:send-selection` — AXI25: Send selection as context
-- `bojubot:show-about` — AXI25: About
-- `bojubot:show-session-history` — AXI25: Show session history
-- `bojubot:switch-model` — AXI25: Switch model
-- `bojubot:toggle-panel` — AXI25: Toggle panel
+## axi25
+- `axi25:audit-memory-file` — AXI25: Audit memory file
+- `axi25:change-permission-mode` — AXI25: Change permission mode
+- `axi25:clear-session` — AXI25: Clear current session
+- `axi25:copy-last-response` — AXI25: Copy last response
+- `axi25:export-conversation` — AXI25: Export conversation
+- `axi25:export-to-vault` — AXI25: Export session to vault
+- `axi25:focus-input` — AXI25: Focus chat input
+- `axi25:new-session` — AXI25: New session
+- `axi25:open-agent` — AXI25: Open agent panel
+- `axi25:open-context-file` — AXI25: Open context file
+- `axi25:open-settings` — AXI25: Open settings
+- `axi25:refresh-context` — AXI25: Refresh session context
+- `axi25:reload-skills` — AXI25: Reload skills
+- `axi25:send-selection` — AXI25: Send selection as context
+- `axi25:show-about` — AXI25: About
+- `axi25:show-session-history` — AXI25: Show session history
+- `axi25:switch-model` — AXI25: Switch model
+- `axi25:toggle-panel` — AXI25: Toggle panel
 
 ## bookmarks
 - `bookmarks:bookmark-all-tabs` — Bookmarks: Bookmark all tabs...

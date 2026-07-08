@@ -44,9 +44,12 @@ const BRAND = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DRY = process.argv.includes("--dry-run") || process.argv.includes("-n");
-const DIR = dirname(fileURLToPath(import.meta.url));
-const MAIN_JS = join(DIR, "plugin", "main.js");
-const MANIFEST = join(DIR, "plugin", "manifest.json");
+const DIR = dirname(fileURLToPath(import.meta.url));  // .build/
+const ROOT = join(DIR, "..");                         // repo root = the loadable plugin
+const ART = join(DIR, "brand");                        // .build/brand/ — plugin art
+const MAIN_JS = join(ROOT, "main.js");
+const MANIFEST = join(ROOT, "manifest.json");
+const DATA = join(ROOT, "data.json");
 const C = { g: "\x1b[32m", y: "\x1b[33m", r: "\x1b[31m", d: "\x1b[2m", x: "\x1b[0m" };
 const log = [];
 const note = (i, m) => log.push(`  ${i} ${m}`);
@@ -135,6 +138,24 @@ if (existsSync(MANIFEST)) {
   note(changed ? `${C.g}✓${C.x}` : `${C.d}·${C.x}`, `manifest ${C.d}${changed ? "atualizado (name/author/urls)" : "ok"}${C.x}`);
 }
 
+// ── data.json ────────────────────────────────────────────────────────────────
+// Ship a CLEAN default: strip old-brand leaks (the vendored bundle still carried
+// "BojuBot"/"bojubot" here) and never ship a live session id. CI resets this too.
+if (existsSync(DATA)) {
+  const data = JSON.parse(readFileSync(DATA, "utf8"));
+  let changed = false;
+  const DATA_FIXES = {
+    exportFolder: "AXI25 Exports",
+    logFilePath: ".obsidian/plugins/axi25/axi25-debug.log",
+  };
+  for (const [k, v] of Object.entries(DATA_FIXES)) {
+    if (data[k] !== v) { data[k] = v; changed = true; }
+  }
+  if (data.lastActiveSessionId) { data.lastActiveSessionId = ""; changed = true; }
+  if (changed && !DRY) writeFileSync(DATA, JSON.stringify(data, null, 2) + "\n");
+  note(changed ? `${C.g}✓${C.x}` : `${C.d}·${C.x}`, `data.json ${C.d}${changed ? "saneado (export/log/sessão)" : "ok"}${C.x}`);
+}
+
 // ── output ───────────────────────────────────────────────────────────────────
 console.log(`\n${DRY ? C.y + "DRY-RUN " + C.x : ""}Brand → ${C.g}${BRAND.name}${C.x}`);
 console.log(log.join("\n"));
@@ -144,7 +165,7 @@ if (src !== srcBefore) {
 } else console.log(`\n${C.d}main.js já brandado${C.x}\n`);
 
 function swapImage(varName, file) {
-  const path = join(DIR, file);
+  const path = join(ART, file);
   if (!file || !existsSync(path)) { note(`${C.d}·${C.x}`, `img     ${C.d}${varName}: ${file} ausente, pulado${C.x}`); return; }
   const re = new RegExp(`var ${varName} = "data:image\\/[^"]*";`);
   if (!re.test(src)) { note(`${C.y}!${C.x}`, `${C.y}DRIFT${C.x}   ${varName}`); return; }
