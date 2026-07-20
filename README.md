@@ -22,54 +22,69 @@ skills, and drives Claude against your own notes. It ships inside the distributa
 [AXI25 vault](https://github.com/felipefontoura/axi25).
 
 It is a **re-branded distribution of [BojuBot](https://github.com/ScottKirvan/BojuBot)**
-(MIT, Scott Kirvan). We do not fork the source: the **repo root is the loadable, branded
-plugin** and all build tooling lives in [`.build/`](.build). See
-[`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) for the required MIT attribution.
+(MIT, Scott Kirvan). We do not fork the source and we no longer patch the bundle: the
+**repo root ships the stock upstream `main.js` / `styles.css` unmodified**, and all branding
+is driven by the upstream `brand` config in `data.json` (a feature we contributed upstream —
+see [Credits](#credits--upstream)). See [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md)
+for the required MIT attribution.
 
 ## Layout
 
 | Path | What |
 | --- | --- |
-| `main.js` · `manifest.json` · `styles.css` · `data.json` | the loadable Obsidian plugin (repo root) |
-| [`.build/apply-brand.mjs`](.build/apply-brand.mjs) | idempotent branding engine — name, icon, artwork, links, `data.json` |
+| `main.js` · `styles.css` | **stock upstream build, byte-for-byte** — never edited here |
+| `manifest.json` | plugin identity (`id: bojubot`, `name: AXI25`, author `Felipe Fontoura`) |
+| `data.json` | shipped settings + the `brand` block that drives all branding |
+| [`.build/gen-data.mjs`](.build/gen-data.mjs) | generates `data.json` — brand name, icon, embedded artwork, links, greetings/tips |
 | [`.build/brand/`](.build/brand) | AXI25 artwork (logo, mark, banner) |
 | [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) | required MIT attribution |
 
 ## Branding
 
-`.build/apply-brand.mjs` rewrites the vendored bundle idempotently:
+Nothing rewrites the bundle. Upstream BojuBot exposes an opt-in `brand` config; AXI25 sets it
+in `data.json` and ships the stock `main.js`. `gen-data.mjs` writes that block:
 
-- **Name** — every visible `BojuBot` → `AXI25`.
-- **Icon** — ribbon icon → `square-terminal` (craft aesthetic, not an "AI robot").
-- **Artwork** — the real AXI25 wordmark (charcoal `#14120F` + amber `#EDA921`), embedded into `main.js`.
-- **Identity** — `manifest.json` name / description / author (`Felipe Fontoura`); `fundingUrl` cleared.
-- **Links** — every third-party destination repointed to this repo (only Claude infra remains).
-- **Defaults** — `data.json` shipped clean: no stale brand strings, no live session id.
+- **Name** — `brand.name: "AXI25"`. Being ≠ `"BojuBot"` marks the build white-labeled, which
+  upstream uses to suppress its own sponsor message / funding card and show the MIT credit line.
+- **Icon** — `brand.icon: "square-terminal"` (craft aesthetic, not an "AI robot").
+- **Artwork** — the real AXI25 wordmark (charcoal `#14120F` + amber `#EDA921`), embedded as
+  `data:` URIs so the plugin is self-contained (no vault-relative art files).
+- **Identity** — Claude introduces itself as AXI25 (`applyToAssistantIdentity: true`).
+- **Links** — `doc` / `support` → the AXI25 GitHub repo; `community` / `source` set to `""` to hide the
+  Discord / GitHub cards (author credit stays via upstream's non-configurable MIT line).
+- **Locked** — `brand.locked: true` hides the Brand settings section from end users.
+- **Defaults** — `data.json` shipped clean: no live session id, default log path.
 
 ```bash
-# after refreshing the vendored BojuBot bundle at the repo root (main.js / manifest.json)
-node .build/apply-brand.mjs --dry-run   # preview
-node .build/apply-brand.mjs             # apply
+# after refreshing the stock upstream build at the repo root (see below)
+node .build/gen-data.mjs -n   # dry run (print, don't write)
+node .build/gen-data.mjs      # write data.json
 ```
 
-`DRIFT` warnings flag any target string that moved in a newer upstream build — a quick fix
-in the config, never a merge.
+### Refreshing the upstream build
+
+`main.js` / `styles.css` come straight from an upstream `npm run build`. To update to a newer
+BojuBot: build upstream (or our fork) and copy `main.js` + `styles.css` to the repo root, bump
+`manifest.json` `version` / `minAppVersion` to match, then re-run `gen-data.mjs`. Keep
+`manifest.id` as `bojubot` — upstream hardcodes `.obsidian/plugins/bojubot/` for its log path
+and command reference, so the plugin folder must be named `bojubot`.
 
 ## How the vault consumes it
 
 The [AXI25 vault](https://github.com/felipefontoura/axi25) mounts this repo as a **git
-submodule** at `.obsidian/plugins/axi25/`, so Obsidian loads the plugin live during
-development. At release, the vault's CI assembles a clean copy — verifies the branding,
-resets `data.json`, strips `.build/` — into the distributable zip.
+submodule** at `.obsidian/plugins/bojubot/` (the folder name must match `manifest.id`), so
+Obsidian loads the plugin live during development. At release, the vault's CI assembles a clean
+copy — resets `data.json`, strips `.build/` — into the distributable zip.
 
 ## Credits & upstream
 
 Built on **[BojuBot](https://github.com/ScottKirvan/BojuBot)** by Scott Kirvan (MIT) — full
 credit to the original project; our changes are branding and packaging only. Rather than only
-patch downstream, we proposed a brandable-config feature upstream so any user can white-label
-the plugin from settings: [ScottKirvan/BojuBot#286](https://github.com/ScottKirvan/BojuBot/issues/286)
-(design in [`.build/UPSTREAM-PROPOSAL.md`](.build/UPSTREAM-PROPOSAL.md)). If it lands, this
-repo's branding step retires.
+patch downstream, we contributed the brandable-config feature **upstream** so any user can
+white-label the plugin from settings:
+[ScottKirvan/BojuBot#286](https://github.com/ScottKirvan/BojuBot/issues/286), merged as
+[#293](https://github.com/ScottKirvan/BojuBot/pull/293). AXI25 now ships the stock upstream
+build and configures it via `data.json` — the old bundle-patching step is retired.
 
 ## License
 
